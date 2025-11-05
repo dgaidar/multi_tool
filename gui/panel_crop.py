@@ -8,10 +8,11 @@ from shared_lib.gui.widget_select_file import WidgetSelectFile
 from gui.widget_run import WidgetRun
 import os
 from gui.widget_image_set import WidgetImageSet
-from shared_lib.gui.widget_preview_folder import WidgetPreviewFolder
+from shared_lib.gui.widget_preview_file import WidgetPreview
 
-class PanelSizeAlign(tk.Frame):
-    def __init__(self, parent, name="SizeAlign", **kwargs):
+
+class PanelCrop(tk.Frame):
+    def __init__(self, parent, name="Crop", **kwargs):
         super().__init__(parent, **kwargs)
         self.name = name
 
@@ -19,15 +20,15 @@ class PanelSizeAlign(tk.Frame):
         self.rowconfigure(1, weight=1)
         self.columnconfigure(0, weight=1)
 
-        # Source folder panel
-        self.panel_src_folder = WidgetSelectFile(self, True,
-                                                 History("history/size_align_src.json", 20),
-                                                 init_from_history=False)
-        self.panel_src_folder.grid(row=0, column=0, padx=5, pady=5, sticky="new")
+        # Source file panel
+        self.panel_src_file = WidgetSelectFile(self, False,
+                                               History("history/crop_src.json", 20),
+                                               init_from_history=False)
+        self.panel_src_file.grid(row=0, column=0, padx=5, pady=5, sticky="new")
 
         # File preview scrollable panel
-        self.panel_preview = WidgetPreviewFolder(self)
-        self.panel_src_folder.var_path.trace_add("write", self.load_folder)  # fires on .set() or user change
+        self.panel_preview = WidgetPreview(self)
+        self.panel_src_file.var_path.trace_add("write", self.load_preview_file)  # fires on .set() or user change
         self.panel_preview.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 
         # Destination directory panel (stick to the bottom)
@@ -43,9 +44,9 @@ class PanelSizeAlign(tk.Frame):
         self.panel_run = WidgetRun(self, text=__doc__, command=self.run)
         self.panel_run.grid(row=4, column=0, padx=5, pady=5, sticky="sew")
 
-    def load_folder(self, *args):
-        path = self.panel_src_folder.var_path.get()
-        self.panel_preview.load_folder(path)
+    def load_preview_file(self, *args):
+        path = self.panel_src_file.var_path.get()
+        self.panel_preview.load(path)
 
     @staticmethod
     def check_folder(path):
@@ -58,9 +59,8 @@ class PanelSizeAlign(tk.Frame):
 
     def run(self):
         new_size = self.settings.get_size()
-        src = self.panel_src_folder.var_path.get()
+        src = self.panel_src_file.var_path.get()
         dst = self.panel_dst_folder.var_path.get()
-        self.check_folder(src)
         self.check_folder(dst)
         for fname in os.listdir(src):
             fpath = os.path.join(src, fname)
@@ -70,13 +70,3 @@ class PanelSizeAlign(tk.Frame):
                 resized.save(os.path.join(dst, fname))
 
 
-
-# Main Application
-if __name__ == "__main__":
-    root = tk.Tk()
-    root.title("File Control Example")
-    root.geometry("600x500")
-
-    control = PanelSizeAlign(root)
-
-    root.mainloop()

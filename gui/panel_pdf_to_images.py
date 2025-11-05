@@ -8,13 +8,14 @@ from shared_lib.img_process import pdf_to_png
 
 class PanelPdfToImages(tk.Frame):
     """Convert pdf file to images (one per page)"""
-    def __init__(self, parent, name=None, **kwargs):
+    def __init__(self, parent, name="PdfToImg", **kwargs):
         """Initialize"""
         super().__init__(parent, **kwargs)
         self.name = name
 
         self.pack(fill=tk.BOTH, expand=True)
         self.rowconfigure(1, weight=1)
+        self.columnconfigure(0, weight=1)
 
         # Source file panel
         self.panel_src_file = WidgetSelectFile(self, False,

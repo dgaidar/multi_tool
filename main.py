@@ -3,6 +3,7 @@ from tkinter import ttk
 from shared_lib.settings import Settings
 from gui.panel_pdf_to_images import PanelPdfToImages
 from gui.panel_size_align import PanelSizeAlign
+from gui.panel_crop import PanelCrop
 
 
 class MultiTool:
@@ -20,14 +21,16 @@ class MultiTool:
 
         # Create Tabs
         tab_control = ttk.Notebook(self.root)
+        tab_control.pack(expand=1, fill="both")
 
         tab1 = PanelSizeAlign(tab_control)
-        tab_control.add(tab1, text='AlignSize')
+        tab_control.add(tab1, text=tab1.name)
 
         tab2 = PanelPdfToImages(tab_control)
-        tab_control.add(tab2, text='PdfToImages')
+        tab_control.add(tab2, text=tab2.name)
 
-        tab_control.pack(expand=1, fill="both")
+        tab3 = PanelCrop(tab_control)
+        tab_control.add(tab3, text=tab3.name)
 
         # Restore tab selection
         tab_index = Settings().get("Tab_SelectedIndex", default_val=0)
